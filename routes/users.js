@@ -4,10 +4,10 @@ const router = express.Router();
 
 const usersControllers = require('../controllers/users');
 
-router.get('/:pid', usersControllers.getPlacesById);
+router.get('/', usersControllers.getUsers);
 
-router.post('/signup', usersControllers.createPlace);
+router.post('/signup', usersControllers.signup);
 
-router.post('/login', usersControllers.createPlace);
+router.post('/login', usersControllers.login);
 
-module.exports router;
+module.exports = router;
