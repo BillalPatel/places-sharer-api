@@ -6,8 +6,8 @@ const users = require('./routes/users');
 
 const app = express();
 
+app.use(bodyParser.json());
 app.use('/api/places', places);
-app.use('/api/users', users);
 
 app.use((error, req, res, next) => {
   if (res.headerSent) {
@@ -17,5 +17,7 @@ app.use((error, req, res, next) => {
     errorMessage: error.message || 'Error occurred.'
   });
 });
+
+app.use('/api/users', users);
 
 app.listen(5000);
