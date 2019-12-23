@@ -1,4 +1,5 @@
 const HttpError = require('../models/http-error');
+const uuid = require('uuid/v4');
 
 const dummyPlaces = [
   {
@@ -14,7 +15,6 @@ const dummyPlaces = [
     }
   },
   {
-    id: '1321',
     title: 'Paris',
     description: 'Eiffel Tower',
     address: 'Sultan Ahmet, Ayasofya Meydanı, 34122 Fatih/İstanbul, Turkey',
@@ -48,6 +48,7 @@ const createPlace = (req, res, next) => {
     title, description, address, creator, coordinates
   } = req.body;
   const createdPlace = {
+    id: uuid(),
     title,
     description,
     address,
@@ -55,7 +56,7 @@ const createPlace = (req, res, next) => {
     location: coordinates
   };
   dummyPlaces.push(createdPlace);
-  res.status(201).json({ place: createPlace });
+  res.status(201).json({ place: createdPlace });
 };
 
 exports.getPlaceById = getPlaceById;
