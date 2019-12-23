@@ -17,6 +17,12 @@ const getUsers = (req, res, next) => {
 const signup = (req, res, next) => {
   const { name, email, password } = req.body;
 
+  const userExists = dummyUsers.find((element) => element.email === email);
+
+  if (userExists) {
+    throw new HttpError('User email already exists. Try logging in instead', 401);
+  }
+
   const createdUser = {
     id: uuid(),
     name,
@@ -32,7 +38,7 @@ const login = (req, res, next) => {
   const foundUser = dummyUsers.find((element) => element.email === email);
 
   if (!foundUser || !foundUser.password === password) {
-    throw new HttpError('Could not find user', 401);
+    throw new HttpError('Could not find user', 422);
   } else {
     res.status(200).json({ meessage: 'Logged in successfully' });
   }
