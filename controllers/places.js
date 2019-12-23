@@ -1,7 +1,8 @@
 const uuid = require('uuid/v4');
+const { validationResult } = require('express-validator');
 const HttpError = require('../models/http-error');
 
-let dummyPlaces = [
+const dummyPlaces = [
   {
     id: '123',
     title: 'Istanbul',
@@ -44,6 +45,11 @@ const getPlaceByUserId = (req, res, next) => {
 };
 
 const createPlace = (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    throw new HttpError('Invalid input submitted', 422);
+  }
+
   const {
     title, description, address, creator, coordinates
   } = req.body;
@@ -60,6 +66,11 @@ const createPlace = (req, res, next) => {
 };
 
 const updatePlaceById = (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    throw new HttpError('Invalid input submitted', 422);
+  }
+
   const placeId = req.params.pid;
   const { title, description } = req.body;
 
@@ -75,6 +86,11 @@ const updatePlaceById = (req, res, next) => {
 
 const deletePlaceById = (req, res, next) => {
   const placeId = req.params.pid;
+
+  if (!dummyPlaces.find((element) => element.id === placeId)) {
+    throw new Error('Could not find place', 404);
+  }
+
   dummyPlaces.dummyPlaces.filter((element) => element.id !== placeId);
 
   res.status(200).json({ message: 'Place deleted' });
