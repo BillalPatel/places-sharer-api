@@ -1,2 +1,5 @@
 # dependencies
 /node_modules
+
+# files
+/Users/billalp/my-projects/places-sharer-api/utils/location
