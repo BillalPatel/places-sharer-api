@@ -15,7 +15,7 @@ router.post('/',
   check('address').not().isEmpty(),
   placesControllers.createPlace);
 
-router.patch('/:pid', 
+router.patch('/:pid',
   check('title').not().isEmpty(),
   check('description').isLength({ min: 5 }),
   placesControllers.updatePlaceById);
