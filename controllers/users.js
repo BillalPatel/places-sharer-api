@@ -18,7 +18,7 @@ const getUsers = (req, res, next) => {
 const signup = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    throw new HttpError('Invalid input submitted', 422);
+    throw new HttpError('Invalid input submitted. Try submitting something else', 422);
   }
 
   const { name, email, password } = req.body;
