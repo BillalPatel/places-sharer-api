@@ -16,17 +16,6 @@ const dummyPlaces = [
       lat: 41.008583,
       lng: 28.9779863
     }
-  },
-  {
-    title: 'Paris',
-    description: 'Eiffel Tower',
-    address: 'Sultan Ahmet, Ayasofya Meydanı, 34122 Fatih/İstanbul, Turkey',
-    imageUrl: 'http://i.hurimg.com/i/hdn/75/0x0/5c0d246dc03c0e15a49c546a.jpg',
-    creatorId: 'user1',
-    location: {
-      lat: 41.008583,
-      lng: 28.9779863
-    }
   }
 ];
 
