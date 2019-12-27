@@ -3,6 +3,7 @@ const { validationResult } = require('express-validator');
 
 const HttpError = require('../models/http-error');
 const getAddressCoordinate = require('../utils/location');
+const Place = require('../models/place-mongoose');
 
 const dummyPlaces = [
   {
@@ -43,7 +44,7 @@ const createPlace = async (req, res, next) => {
   }
 
   const {
-    title, description, address, creator
+    title, description, address, creatorId
   } = req.body;
 
   let coordinates;
@@ -54,15 +55,21 @@ const createPlace = async (req, res, next) => {
     return next(error);
   }
 
-  const createdPlace = {
-    id: uuid(),
+  const createdPlace = new Place ({
     title,
     description,
     address,
-    creator,
+    imageUrl: 'https://d3j2s6hdd6a7rg.cloudfront.net/v2/uploads/media/default/0001/98/thumb_97689_default_news_size_5.jpeg',
+    creatorId,
     location: coordinates
-  };
-  dummyPlaces.push(createdPlace);
+  });
+
+  try {
+    await createdPlace.save();
+  } catch (error) {
+    HttpError('Could not create the new place', 500);
+    return next(error);
+  }
   res.status(201).json({ place: createdPlace });
 };
 
