@@ -3,23 +3,13 @@ const { validationResult } = require('express-validator');
 
 const HttpError = require('../models/http-error');
 const getAddressCoordinate = require('../utils/location');
+const Place = require('../models/place-mongoose');
 
 const dummyPlaces = [
   {
     id: '123',
     title: 'Istanbul',
     description: 'Hagia Sophia',
-    address: 'Sultan Ahmet, Ayasofya Meydanı, 34122 Fatih/İstanbul, Turkey',
-    imageUrl: 'http://i.hurimg.com/i/hdn/75/0x0/5c0d246dc03c0e15a49c546a.jpg',
-    creatorId: 'user1',
-    location: {
-      lat: 41.008583,
-      lng: 28.9779863
-    }
-  },
-  {
-    title: 'Paris',
-    description: 'Eiffel Tower',
     address: 'Sultan Ahmet, Ayasofya Meydanı, 34122 Fatih/İstanbul, Turkey',
     imageUrl: 'http://i.hurimg.com/i/hdn/75/0x0/5c0d246dc03c0e15a49c546a.jpg',
     creatorId: 'user1',
@@ -54,7 +44,7 @@ const createPlace = async (req, res, next) => {
   }
 
   const {
-    title, description, address, creator
+    title, description, address, creatorId
   } = req.body;
 
   let coordinates;
@@ -65,15 +55,21 @@ const createPlace = async (req, res, next) => {
     return next(error);
   }
 
-  const createdPlace = {
-    id: uuid(),
+  const createdPlace = new Place ({
     title,
     description,
     address,
-    creator,
+    imageUrl: 'https://d3j2s6hdd6a7rg.cloudfront.net/v2/uploads/media/default/0001/98/thumb_97689_default_news_size_5.jpeg',
+    creatorId,
     location: coordinates
-  };
-  dummyPlaces.push(createdPlace);
+  });
+
+  try {
+    await createdPlace.save();
+  } catch (error) {
+    HttpError('Could not create the new place', 500);
+    return next(error);
+  }
   res.status(201).json({ place: createdPlace });
 };
 
