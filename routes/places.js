@@ -7,7 +7,7 @@ const placesControllers = require('../controllers/places');
 
 router.get('/:pid', placesControllers.getPlaceById);
 
-router.get('/user/:uid', placesControllers.getPlaceByUserId);
+router.get('/user/:uid', placesControllers.getPlacesByUserId);
 
 router.post('/',
   check('title').not().isEmpty(),
