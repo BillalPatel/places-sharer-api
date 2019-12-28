@@ -5,29 +5,21 @@ const HttpError = require('../models/http-error');
 const getAddressCoordinate = require('../utils/location');
 const Place = require('../models/place-mongoose');
 
-const dummyPlaces = [
-  {
-    id: '123',
-    title: 'Istanbul',
-    description: 'Hagia Sophia',
-    address: 'Sultan Ahmet, Ayasofya Meydanı, 34122 Fatih/İstanbul, Turkey',
-    imageUrl: 'http://i.hurimg.com/i/hdn/75/0x0/5c0d246dc03c0e15a49c546a.jpg',
-    creatorId: 'user1',
-    location: {
-      lat: 41.008583,
-      lng: 28.9779863
-    }
-  }
-];
-
-const getPlacesById = (req, res, next) => {
+const getPlaceById = async (req, res, next) => {
   const placeId = req.params.pid;
-  const places = dummyPlaces.filter((element) => element.id === placeId);
+  let place;
 
-  if (places.length === 0) {
-    throw new HttpError('Could not find place.', 404);
+  try {
+    place = await Place.findById(placeId);
+  } catch (error) {
+    return next(new HttpError('Error occurred', 500));
   }
-  res.json({ places });
+
+  if (!place) {
+    return next(new HttpError('Could not find place.', 404));
+  }
+
+  res.json({ place: place.toObject({ getters: true }) });
 };
 
 const getPlaceByUserId = (req, res, next) => {
@@ -104,7 +96,7 @@ const deletePlaceById = (req, res, next) => {
   res.status(200).json({ message: 'Place deleted' });
 };
 
-exports.getPlacesById = getPlacesById;
+exports.getPlaceById = getPlaceById;
 exports.getPlaceByUserId = getPlaceByUserId;
 exports.createPlace = createPlace;
 exports.updatePlaceById = updatePlaceById;
