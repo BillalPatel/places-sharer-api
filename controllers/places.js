@@ -16,16 +16,27 @@ const getPlaceById = async (req, res, next) => {
   }
 
   if (!place) {
-    return next(new HttpError('Could not find place.', 404));
+    return next(new HttpError('Could not find place', 404));
   }
 
   res.json({ place: place.toObject({ getters: true }) });
 };
 
-const getPlaceByUserId = (req, res, next) => {
+const getPlacesByUserId = async (req, res, next) => {
   const userId = req.params.uid;
-  const user = dummyUsers.find((element) => element.id === userId);
-  res.json({ user });
+  let places;
+
+  try {
+    places = await Place.find({ creatorId: userId });
+  } catch (error) {
+    return next(new HttpError('Error occurred', 500));
+  }
+
+  if (!places || places.length === 0) {
+    return next(new HttpError('Could not find any places', 404));
+  }
+
+  res.json({ places: places.map((place) => place.toObject({ getters: true })) });
 };
 
 const createPlace = async (req, res, next) => {
@@ -97,7 +108,7 @@ const deletePlaceById = (req, res, next) => {
 };
 
 exports.getPlaceById = getPlaceById;
-exports.getPlaceByUserId = getPlaceByUserId;
+exports.getPlacesByUserId = getPlacesByUserId;
 exports.createPlace = createPlace;
 exports.updatePlaceById = updatePlaceById;
 exports.deletePlaceById = deletePlaceById;
