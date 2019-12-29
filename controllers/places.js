@@ -70,39 +70,54 @@ const createPlace = async (req, res, next) => {
   try {
     await createdPlace.save();
   } catch (error) {
-    HttpError('Could not create the new place', 500);
-    return next(error);
+    return next(new HttpError('Could not create the new place', 500));
   }
   res.status(201).json({ place: createdPlace });
 };
 
-const updatePlaceById = (req, res, next) => {
+const updatePlaceById = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    throw new HttpError('Invalid input submitted', 422);
+    return next(new HttpError('Invalid input submitted', 422));
   }
 
   const placeId = req.params.pid;
   const { title, description } = req.body;
 
-  const updatedPlace = { ...dummyPlaces.find((element) => element.id === placeId) };
-  const placeIndex = dummyPlaces.findIndex((element) => element.id === placeId);
-  updatedPlace.title = title;
-  updatedPlace.description = description;
-
-  dummyPlaces[placeIndex] = updatedPlace;
-
-  res.status(200).json({ place: updatedPlace });
-};
-
-const deletePlaceById = (req, res, next) => {
-  const placeId = req.params.pid;
-
-  if (!dummyPlaces.find((element) => element.id === placeId)) {
-    throw new HttpError('Could not find place', 404);
+  let place;
+  try {
+    place = await Place.findById(placeId);
+  } catch (error) {
+    return next(new HttpError('Could not update this place', 500));
   }
 
-  dummyPlaces.dummyPlaces.filter((element) => element.id !== placeId);
+  place.title = title;
+  place.description = description;
+
+  try {
+    await place.save();
+  } catch (error) {
+    return next(new HttpError('Could not update this place'));
+  }
+
+  res.status(200).json({ place: place.toObject({ getters: true }) });
+};
+
+const deletePlaceById = async (req, res, next) => {
+  const placeId = req.params.pid;
+  let place;
+
+  try {
+    place = await Place.findById(placeId);
+  } catch (error) {
+    return next(new HttpError('Could not delete this place', 500));
+  }
+
+  try {
+    await place.remove();
+  } catch (error) {
+    return next(new HttpError('Could not delete this place', 500));
+  }
 
   res.status(200).json({ message: 'Place deleted' });
 };
