@@ -4,8 +4,16 @@ const { validationResult } = require('express-validator');
 const User = require('../models/user-mongoose');
 const HttpError = require('../models/http-error');
 
-const getUsers = (req, res, next) => {
-  res.status(200).json({ users: dummyUsers });
+const getUsers = async (req, res, next) => {
+  let users;
+
+  try {
+    users = await User.find({}, 'email name');
+  } catch (error) {
+    return next(new HttpError('Could not get users', 500));
+  }
+
+  res.status(200).json({ users: users.map((user) => user.toObject({ getters: true })) });
 };
 
 const signup = async (req, res, next) => {
