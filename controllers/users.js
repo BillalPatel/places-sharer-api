@@ -11,10 +11,12 @@ const getUsers = (req, res, next) => {
 const signup = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    throw new HttpError('Invalid input submitted. Try submitting something else', 422);
+    return next(new HttpError('Invalid input submitted. Try submitting something else', 422));
   }
 
-  const { name, email, password } = req.body;
+  const {
+    name, email, password, places
+  } = req.body;
 
   let existingUser;
 
@@ -28,14 +30,14 @@ const signup = async (req, res, next) => {
     return next(new HttpError('User already exists. Try logging in instead', 422));
   }
 
-  const createdUser = {
+  const createdUser = new User ({
     id: uuid(),
     name,
     email,
     password,
     imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/d/d6/London-Eye-2009.JPG',
     places
-  };
+  });
 
   try {
     await createdUser.save();
