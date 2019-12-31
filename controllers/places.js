@@ -1,8 +1,10 @@
+const mongoose = require('mongoose');
 const { validationResult } = require('express-validator');
 
 const HttpError = require('../models/http-error');
 const getAddressCoordinate = require('../utils/location');
 const Place = require('../models/place-mongoose');
+const User = require('../models/user-mongoose');
 
 const getPlaceById = async (req, res, next) => {
   const placeId = req.params.pid;
@@ -58,16 +60,33 @@ const createPlace = async (req, res, next) => {
   }
 
   const createdPlace = new Place ({
+    creatorId,
     title,
     description,
     address,
     imageUrl: 'https://d3j2s6hdd6a7rg.cloudfront.net/v2/uploads/media/default/0001/98/thumb_97689_default_news_size_5.jpeg',
-    creatorId,
     location: coordinates
   });
 
+  let user;
+
   try {
-    await createdPlace.save();
+    user = await User.findById(creatorId);
+  } catch (error) {
+    return next(new HttpError('Could not find this particular user', 500));
+  }
+
+  if (!user) {
+    return next(new HttpError('Could not find this user', 404));
+  }
+
+  try {
+    const sess = await mongoose.startSession();
+    sess.startTransaction();
+    await createdPlace.save({ session: sess });
+    user.places.push(createdPlace);
+    await user.save({ session: sess });
+    await sess.commitTransaction();
   } catch (error) {
     return next(new HttpError('Could not create the new place', 500));
   }
@@ -107,13 +126,22 @@ const deletePlaceById = async (req, res, next) => {
   let place;
 
   try {
-    place = await Place.findById(placeId);
+    place = await Place.findById(placeId).populate('creatorId');
   } catch (error) {
     return next(new HttpError('Could not delete this place', 500));
   }
 
+  if (!place) {
+    return next(new HttpError('Could not find this place', 404));
+  }
+
   try {
-    await place.remove();
+    const sess = await mongoose.startSession();
+    sess.startTransaction();
+    await place.remove({ session: sess });
+    place.creatorId.places.pull(place);
+    await place.creatorId.save({ session: sess });
+    await sess.commitTransaction();
   } catch (error) {
     return next(new HttpError('Could not delete this place', 500));
   }
