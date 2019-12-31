@@ -22,9 +22,7 @@ const signup = async (req, res, next) => {
     return next(new HttpError('Invalid input submitted. Try submitting something else', 422));
   }
 
-  const {
-    name, email, password, places
-  } = req.body;
+  const { name, email, password } = req.body;
 
   let existingUser;
 
@@ -44,7 +42,7 @@ const signup = async (req, res, next) => {
     email,
     password,
     imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/d/d6/London-Eye-2009.JPG',
-    places
+    places: []
   });
 
   try {
