@@ -40,5 +40,5 @@ mongoose
     console.log('*App Running*');
   })
   .catch((error) => {
-    console.log(error);
+    console.log('Build failed... ', error);
   });
