@@ -64,7 +64,7 @@ const createPlace = async (req, res, next) => {
     title,
     description,
     address,
-    imageUrl: 'https://d3j2s6hdd6a7rg.cloudfront.net/v2/uploads/media/default/0001/98/thumb_97689_default_news_size_5.jpeg',
+    imageUrl: req.file.path,
     location: coordinates
   });
 
