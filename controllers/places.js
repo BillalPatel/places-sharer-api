@@ -71,19 +71,21 @@ const createPlace = async (req, res, next) => {
   let user;
 
   try {
+    console.log('creatorId', title, description, address);
     user = await User.findById(creatorId);
   } catch (error) {
     return next(new HttpError('Could not find this particular user', 500));
   }
 
   if (!user) {
-    return next(new HttpError('Could not find this user', 404));
+    return next(new HttpError('Could not find this particular user', 404));
   }
 
   try {
     const sess = await mongoose.startSession();
     sess.startTransaction();
     await createdPlace.save({ session: sess });
+    console.log('hello2');
     user.places.push(createdPlace);
     await user.save({ session: sess });
     await sess.commitTransaction();
@@ -103,6 +105,7 @@ const updatePlaceById = async (req, res, next) => {
   const { title, description } = req.body;
 
   let place;
+
   try {
     place = await Place.findById(placeId);
   } catch (error) {
@@ -145,7 +148,6 @@ const deletePlaceById = async (req, res, next) => {
   } catch (error) {
     return next(new HttpError('Could not delete this place', 500));
   }
-
   res.status(200).json({ message: 'Place deleted' });
 };
 
