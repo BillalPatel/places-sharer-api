@@ -77,7 +77,7 @@ const createPlace = async (req, res, next) => {
   }
 
   if (!user) {
-    return next(new HttpError('Could not find this particular user', 404));
+    return next(new HttpError('Could not find this user', 404));
   }
 
   try {
