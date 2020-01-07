@@ -1,4 +1,3 @@
-const uuid = require('uuid/v4');
 const { validationResult } = require('express-validator');
 
 const User = require('../models/user-mongoose');
@@ -8,7 +7,7 @@ const getUsers = async (req, res, next) => {
   let users;
 
   try {
-    users = await User.find({}, 'email name');
+    users = await User.find({}, 'name imageUrl email');
   } catch (error) {
     return next(new HttpError('Could not get users', 500));
   }
@@ -37,11 +36,10 @@ const signup = async (req, res, next) => {
   }
 
   const createdUser = new User ({
-    id: uuid(),
     name,
+    imageUrl: req.file.path,
     email,
     password,
-    imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/d/d6/London-Eye-2009.JPG',
     places: []
   });
 
