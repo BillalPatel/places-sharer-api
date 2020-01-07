@@ -71,7 +71,6 @@ const createPlace = async (req, res, next) => {
   let user;
 
   try {
-    console.log('creatorId', title, description, address);
     user = await User.findById(creatorId);
   } catch (error) {
     return next(new HttpError('Could not find this particular user', 500));
@@ -85,7 +84,6 @@ const createPlace = async (req, res, next) => {
     const sess = await mongoose.startSession();
     sess.startTransaction();
     await createdPlace.save({ session: sess });
-    console.log('hello2');
     user.places.push(createdPlace);
     await user.save({ session: sess });
     await sess.commitTransaction();
