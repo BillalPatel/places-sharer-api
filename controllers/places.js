@@ -1,3 +1,5 @@
+const fs = require('fs');
+
 const mongoose = require('mongoose');
 const { validationResult } = require('express-validator');
 
@@ -30,14 +32,12 @@ const getPlacesByUserId = async (req, res, next) => {
   try {
     userWithPlaces = await User.findById(userId).populate('places');
   } catch (error) {
-    return next(new HttpError('Error occurred', 500));
+    return next(new HttpError('Could not find any places for this user', 500));
   }
 
-  if (!userWithPlaces || userWithPlaces.places.length === 0) {
-    return next(new HttpError('Could not find any places', 404));
-  }
-
-  res.json({ places: userWithPlaces.places.map((place) => place.toObject({ getters: true })) });
+  res.status(200).json({
+    places: userWithPlaces.places.map((place) => place.toObject({ getters: true })) 
+  });
 };
 
 const createPlace = async (req, res, next) => {
@@ -137,6 +137,8 @@ const deletePlaceById = async (req, res, next) => {
     return next(new HttpError('Could not find this place', 404));
   }
 
+  const imagePath = place.imageUrl;
+
   try {
     const sess = await mongoose.startSession();
     sess.startTransaction();
@@ -147,6 +149,11 @@ const deletePlaceById = async (req, res, next) => {
   } catch (error) {
     return next(new HttpError('Could not delete this place', 500));
   }
+
+  fs.unlink(imagePath, err => {
+    console.log(err);
+  });
+
   res.status(200).json({ message: 'Place deleted' });
 };
 
