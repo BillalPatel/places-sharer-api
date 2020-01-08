@@ -40,7 +40,7 @@ const signup = async (req, res, next) => {
   let hashedPassword;
 
   try {
-    hashedPassword = await bcrypt.hash(password, 20);
+    hashedPassword = await bcrypt.hash(password, 10);
   } catch (error) {
     return next(new HttpError('Could not create the new user', 500));
   }
