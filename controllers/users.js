@@ -1,5 +1,6 @@
 const { validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 const User = require('../models/user-mongoose');
 const HttpError = require('../models/http-error');
@@ -44,7 +45,7 @@ const signup = async (req, res, next) => {
     return next(new HttpError('Could not create the new user', 500));
   }
 
-  const createdUser = new User ({
+  const createdUser = new User({
     name,
     imageUrl: req.file.path,
     email,
@@ -58,7 +59,24 @@ const signup = async (req, res, next) => {
     return next(new HttpError('Could not create the new user', 500));
   }
 
-  res.status(201).json({ user: createdUser.toObject({ getters: true }) });
+  let token;
+
+  try {
+    token = jwt.sign({
+      userId: createdUser.id,
+      email: createdUser.email
+    },
+    'secret',
+    { expiresIn: '2h' });
+  } catch (error) {
+    return next(new HttpError('Could not create the new user', 500));
+  }
+
+  res.status(201).json({
+    userId: createdUser.id,
+    email: createdUser.email,
+    password: createdUser.password
+  });
 };
 
 const login = async (req, res, next) => {
@@ -88,7 +106,24 @@ const login = async (req, res, next) => {
     return next(new HttpError('Invalid user credentials entered. Please try again', 401));
   }
 
-  res.status(200).json({ message: 'Logged in successfully', user: existingUser.toObject({ getters: true }) });
+  let token;
+
+  try {
+    token = jwt.sign({
+      userId: existingUser.id,
+      email: existingUser.email
+    },
+    'secret',
+    { expiresIn: '2h' });
+  } catch (error) {
+    return next(new HttpError('Could not login', 500));
+  }
+
+  res.status(200).json({
+    user: existingUser.id,
+    email: existingUser.email,
+    token
+  });
 };
 
 exports.getUsers = getUsers;
