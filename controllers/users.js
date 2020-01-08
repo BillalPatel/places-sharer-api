@@ -1,4 +1,5 @@
 const { validationResult } = require('express-validator');
+const bcrypt = require('bcryptjs');
 
 const User = require('../models/user-mongoose');
 const HttpError = require('../models/http-error');
@@ -35,11 +36,19 @@ const signup = async (req, res, next) => {
     return next(new HttpError('User already exists. Try logging in instead', 422));
   }
 
+  let hashedPassword;
+
+  try {
+    hashedPassword = await bcrypt.hash(password, 20);
+  } catch (error) {
+    return next(new HttpError('Could not create the new user', 500));
+  }
+
   const createdUser = new User ({
     name,
     imageUrl: req.file.path,
     email,
-    password,
+    hashedPassword,
     places: []
   });
 
@@ -63,7 +72,19 @@ const login = async (req, res, next) => {
     return next(new HttpError('Error occurred when logging in', 500));
   }
 
-  if (!existingUser || existingUser.password !== password) {
+  if (!existingUser) {
+    return next(new HttpError('Invalid user credentials entered. Please try again', 401));
+  }
+
+  let isValidPassword = false;
+
+  try {
+    isValidPassword = await bcrypt.compare(password, existingUser.password);
+  } catch (error) {
+    return next(new HttpError('Could not access user details', 500));
+  }
+
+  if (!isValidPassword) {
     return next(new HttpError('Invalid user credentials entered. Please try again', 401));
   }
 
