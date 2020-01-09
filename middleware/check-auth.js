@@ -9,15 +9,14 @@ module.exports = (req, res, next) => {
 
   try {
     const token = req.headers.authorization.split(' ')[1];
+
     if (!token) {
       return next(new HttpError('Authentication failed for this user', 401));
     }
-    const decodedToken = jwt.verify(token, 'super'); // Failing
+    const decodedToken = jwt.verify(token, 'secret');
     req.userData = { userId: decodedToken.userId };
     next();
   } catch (error) {
-    console.log('Error is here and still needs fixing');
-    // return next(new HttpError('Authentication failed', 401));
-    return next();
+    return next(new HttpError('Authentication failed', 401));
   }
 };
