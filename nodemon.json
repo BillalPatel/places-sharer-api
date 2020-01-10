@@ -1,0 +1,10 @@
+{
+  "env": {
+    "NODE_ENV": "development",
+    "DB_NAME": "mern-places-dev",
+    "DB_USER": "billal",
+    "DB_PASSWORD": "wWiw4RyyieUzmFX6",
+    "GOOGLE_API_KEY": "...",
+    "JWT_KEY": "secret"
+  }
+}

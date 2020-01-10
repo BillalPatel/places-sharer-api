@@ -66,7 +66,7 @@ const signup = async (req, res, next) => {
       userId: createdUser.id,
       email: createdUser.email
     },
-    'secret',
+    process.env.JWT_KEY,
     { expiresIn: '2h' });
   } catch (error) {
     return next(new HttpError('Could not create the new user', 500));
@@ -113,7 +113,7 @@ const login = async (req, res, next) => {
       userId: existingUser.id,
       email: existingUser.email
     },
-    'secret',
+    process.env.JWT_KEY,
     { expiresIn: '2h' });
   } catch (error) {
     return next(new HttpError('Could not login', 500));
