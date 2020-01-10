@@ -45,12 +45,12 @@ app.use((error, req, res, next) => {
   });
 });
 
-mongoose
-  .connect('mongodb+srv://billal:wWiw4RyyieUzmFX6@cluster0-w1qcp.mongodb.net/places?retryWrites=true&w=majority')
-  .then(() => {
-    app.listen(5000);
+// mongoose
+//   .connect(`mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0-w1qcp.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`)
+//   .then(() => {
+    app.listen(process.env.PORT || 5000);
     console.log('*App Running*');
-  })
-  .catch((error) => {
-    console.log('Build failed... ', error);
-  });
+  // })
+  // .catch((error) => {
+    // console.log('Build failed... ', error);
+  // });
