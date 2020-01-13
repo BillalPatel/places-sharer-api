@@ -2,4 +2,7 @@
 /node_modules
 
 # files
-/utils/location-api.js
+/nodemon.json
+
+# misc
+uploads/images
