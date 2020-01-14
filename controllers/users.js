@@ -9,7 +9,7 @@ const getUsers = async (req, res, next) => {
   let users;
 
   try {
-    users = await User.find({}, 'name imageUrl email');
+    users = await User.find({}, '-password');
   } catch (error) {
     return next(new HttpError('Could not get users', 500));
   }
@@ -75,7 +75,8 @@ const signup = async (req, res, next) => {
   res.status(201).json({
     userId: createdUser.id,
     email: createdUser.email,
-    password: createdUser.password
+    password: createdUser.password,
+    token
   });
 };
 
