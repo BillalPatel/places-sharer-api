@@ -54,7 +54,7 @@ const createPlace = async (req, res, next) => {
   try {
     coordinates = await getAddressCoordinate(address);
   } catch (error) {
-    return next(error);
+    return next(new HttpError('Invalid address entered', 422));
   }
 
   const createdPlace = new Place ({
