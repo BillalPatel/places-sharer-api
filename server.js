@@ -41,7 +41,7 @@ app.use((error, req, res, next) => {
     return next(error);
   }
   res.status(error.code || 500).json({
-    errorMessage: error.message || 'Error occurred.'
+    errorMessage: error.message || 'Error occurred'
   });
 });
 
